@@ -63,7 +63,7 @@ class Player(Entity): # Inherit from Entity
         # No need to re-get rect if only image content changes, unless size changes.
         # If image size could change, then: self.rect = self.image.get_rect(center=self.rect.center)
 
-    def update(self):
+    def update(self, rooms=None):
         keys = pygame.key.get_pressed()
         dx, dy = 0, 0
 
@@ -85,9 +85,21 @@ class Player(Entity): # Inherit from Entity
         if move_vector.length_squared() > 0:
             move_vector = move_vector.normalize() * self.speed
         
+        # Store old position for collision resolution
+        old_rect = self.rect.copy()
+        
         # Update player's world position
         self.rect.x += move_vector.x
         self.rect.y += move_vector.y
+
+        # Check for wall collisions if rooms are provided
+        if rooms:
+            for room in rooms:
+                if room.check_wall_collision(self.rect):
+                    # Get corrected position
+                    corrected_rect = room.get_collision_response(self.rect, old_rect)
+                    self.rect = corrected_rect
+                    break
 
         # Keep player within the entire world boundaries
         self.rect.clamp_ip(pygame.Rect(0, 0, WORLD_WIDTH, WORLD_HEIGHT))

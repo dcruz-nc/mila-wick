@@ -222,7 +222,7 @@ class Game:
 
             # Update entities - This will later be handled by specific systems (Movement, AI etc.)
             # For now, direct update calls for Player and NPC, other entities handled by entity_manager.update()
-            self.player.update() # Player movement and input
+            self.player.update(self.rooms) # Player movement and input with wall collision detection
             for npc in self.entity_manager.npcs: # Update NPCs specifically if they have complex updates
                  npc.update(self.entity_manager, self.combat_manager, self.effect_manager, self.weapon_system) # Pass weapon_system
             
